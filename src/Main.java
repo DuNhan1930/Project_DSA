@@ -97,5 +97,6 @@ public class Main {
         stats.printStatistics();
         System.out.println("Your Final Balance: " + Utils.formatCurrency(player.getBalance()));
         System.out.println("House Balance: " + Utils.formatCurrency(house.getBalance()));
+        System.out.println("House Balance: " + Utils.formatCurrency(house.getBalance()));
     }
 }
