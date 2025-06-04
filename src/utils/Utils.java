@@ -62,7 +62,7 @@ public class Utils {
      *
      * @return A number between 2 and 6 based on the bias.
      */
-    public static int rollSingleBiasedOverDice() {
+    public static int rollBiasedOverDice() {
         int[] biasedOutcomes = {2, 3, 4, 5, 5, 6};
         return biasedOutcomes[random.nextInt(biasedOutcomes.length)];
     }
@@ -74,11 +74,24 @@ public class Utils {
      *
      * @return An array of 3 integers, where each element is the result of one biased die roll.
      */
-    public static int[] biasedRollDice() {
+    public static int[] biasedOverRollDice() {
         int[] diceValues = new int[3];
-        diceValues[0] = rollSingleBiasedOverDice();
-        diceValues[1] = rollSingleBiasedOverDice();
-        diceValues[2] = rollSingleBiasedOverDice();
+        diceValues[0] = rollBiasedOverDice();
+        diceValues[1] = rollBiasedOverDice();
+        diceValues[2] = rollBiasedOverDice();
+        return diceValues;
+    }
+
+    public static int rollBiasedUnderDice() {
+        int[] biasedOutcomes = {1, 2, 2, 3, 4, 5};
+        return biasedOutcomes[random.nextInt(biasedOutcomes.length)];
+    }
+
+    public static int[] biasedUnderRollDice() {
+        int[] diceValues = new int[3];
+        diceValues[0] = rollBiasedUnderDice();
+        diceValues[1] = rollBiasedUnderDice();
+        diceValues[2] = rollBiasedUnderDice();
         return diceValues;
     }
 }
