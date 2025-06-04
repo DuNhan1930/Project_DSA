@@ -3,7 +3,6 @@ import model.House;
 import model.Player;
 import stats.StatisticsManager;
 import utils.Utils;
-import ai.ReinforcementLearningAgent;
 
 import java.util.Scanner;
 
@@ -19,7 +18,6 @@ public class Main {
         House house = new House(1000.0, false);   // House with bias enabled
         GameEngine engine = new GameEngine(house);
         StatisticsManager stats = new StatisticsManager();
-        ReinforcementLearningAgent agent = new ReinforcementLearningAgent();
 
         System.out.println("\n🎲 Welcome to Under-Over Dice Game, " + name + "!");
         System.out.println("Rules: 3–10 = Under, 11–18 = Over. Win if your guess is correct.");
@@ -36,7 +34,6 @@ public class Main {
                 continue;
             }
             if (betInput.equalsIgnoreCase("policy")) {
-                agent.printPolicy();
                 continue;
             }
 
@@ -55,10 +52,6 @@ public class Main {
                 System.out.println("❌ You don't have enough money for that bet.");
                 continue;
             }
-
-            // AI suggestion
-            String aiSuggestion = agent.chooseAction();
-            System.out.println("💡 AI Suggests: " + aiSuggestion.toUpperCase());
 
             System.out.print("Place your bet on 'under' or 'over': ");
             String choice = scanner.nextLine().toLowerCase();
@@ -83,7 +76,6 @@ public class Main {
             // Update stats and AI
             stats.recordOutcome(diceTotal, playerWon);
             int reward = playerWon ? 1 : -1;
-            agent.update(String.valueOf(diceTotal), choice, reward);
 
             // End if player is broke
             if (player.getBalance() <= 0) {

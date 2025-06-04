@@ -1,6 +1,5 @@
 package panel;
 
-import ai.ReinforcementLearningAgent;
 import engine.GameEngine;
 import model.House;
 import model.Player;
@@ -27,7 +26,6 @@ public class GamePanel extends JPanel {
     private final House house;
     private final GameEngine engine;
     private final StatisticsManager stats;
-    private final ReinforcementLearningAgent agent;
 
     public GamePanel(String playerName, double startingBalance, MainFrame mainFrame) {
         String name;
@@ -40,7 +38,6 @@ public class GamePanel extends JPanel {
         this.house = new House(1000.0, true);
         this.engine = new GameEngine(house);
         this.stats = new StatisticsManager();
-        this.agent = new ReinforcementLearningAgent();
 
         setOpaque(false);
         setBackground(new Color(27, 94, 149));
@@ -201,8 +198,6 @@ public class GamePanel extends JPanel {
                 JOptionPane.showMessageDialog(this, result);
 
                 stats.recordOutcome(diceTotal, playerWon);
-                agent.update(String.valueOf(diceTotal), choice, playerWon ? 1 : -1);
-
                 updateBalance();
 
                 if (player.getBalance() <= 0) {
