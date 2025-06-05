@@ -81,8 +81,8 @@ public class BiasManager {
             }
         } else {
             // Fair roll (no bias)
-            diceValues = utils.Utils.rollThreeDice();
-            return utils.Utils.sumDice(diceValues);
+            diceValues = Utils.rollThreeDice();
+            return Utils.sumDice(diceValues);
         }
     }
 
