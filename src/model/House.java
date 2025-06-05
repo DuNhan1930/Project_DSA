@@ -3,7 +3,7 @@ package model;
 public class House {
     private double balance;
 
-    public House(double initialBalance, boolean biasEnabled) {
+    public House(double initialBalance) {
         this.balance = initialBalance;
     }
 

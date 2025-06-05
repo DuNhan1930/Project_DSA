@@ -15,7 +15,7 @@ public class Simulator {
         Random random = new Random();
         int SIMULATION_ROUNDS = 100000;
         Player player = new Player("SimPlayer", 10000);
-        House house = new House(1000.0, false);
+        House house = new House(1000.0);
         GameEngine engine = new GameEngine(house);
         StatisticsManager stats = new StatisticsManager();
 

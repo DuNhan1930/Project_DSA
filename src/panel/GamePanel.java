@@ -34,7 +34,7 @@ public class GamePanel extends JPanel {
         double balance = mainFrame.getPlayerBalance();
 
         this.player = new Player(name, balance);
-        this.house = new House(1000.0, true);
+        this.house = new House(1000.0);
         this.engine = new GameEngine(house);
         this.stats = new StatisticsManager();
 
