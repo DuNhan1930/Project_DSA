@@ -56,7 +56,7 @@ public class BiasManager {
             if (Utils.randomChance(0.8)) {
                 forceLoss(playerBet);
             } else {
-                int biasedSum = playerBet.equalsIgnoreCase("over") ? Utils.randomBetween(3, 10) : Utils.randomBetween(11, 18);
+                int biasedSum = playerBet.equalsIgnoreCase("over") ? Utils.randomBetween(6, 10) : Utils.randomBetween(11, 14);
                 diceValues = Utils.generateDiceSum(biasedSum);
                 recordOverResult(biasedSum > 10);
                 maxConsecutiveBiasLosses++;
