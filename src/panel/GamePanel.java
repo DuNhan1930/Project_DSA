@@ -226,9 +226,9 @@ public class GamePanel extends JPanel {
     }
 
     private void updateDiceIcons(int val1, int val2, int val3) {
-        diceLabel1.setIcon(resizeIcon(new ImageIcon("C:\\Users\\admin\\Downloads\\Project_DSA-DuNhan\\Project_DSA-DuNhan\\src\\resources\\dice" + val1 + ".png")));
-        diceLabel2.setIcon(resizeIcon(new ImageIcon("C:\\Users\\admin\\Downloads\\Project_DSA-DuNhan\\Project_DSA-DuNhan\\src\\resources\\dice" + val2 + ".png")));
-        diceLabel3.setIcon(resizeIcon(new ImageIcon("C:\\Users\\admin\\Downloads\\Project_DSA-DuNhan\\Project_DSA-DuNhan\\src\\resources\\dice" + val3 + ".png")));
+        diceLabel1.setIcon(resizeIcon(new ImageIcon("src/resources/dice" + val1 + ".png")));
+        diceLabel2.setIcon(resizeIcon(new ImageIcon("src/resources/dice" + val2 + ".png")));
+        diceLabel3.setIcon(resizeIcon(new ImageIcon("src/resources/dice" + val3 + ".png")));
     }
 
     private Icon resizeIcon(ImageIcon icon) {
