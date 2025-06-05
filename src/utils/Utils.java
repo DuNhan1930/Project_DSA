@@ -6,18 +6,28 @@ public class Utils {
     private static final Random random = new Random();
 
     /**
-     * Rolls a single six-sided die (fair roll).
-     *
-     * @return A number between 1 and 6.
+     * Trả về true với xác suất cho trước (0.0 đến 1.0).
      */
-    public static int rollDice() {
-        return random.nextInt(6) + 1; // Returns 1–6
+    public static boolean randomChance(double probability) {
+        return Math.random() < probability;
     }
 
     /**
-     * Rolls 3 fair dice and returns their individual values.
-     *
-     * @return An array of 3 integers, where each element is the result of one fair die roll (1-6).
+     * Trả về số ngẫu nhiên trong khoảng [min, max].
+     */
+    public static int randomBetween(int min, int max) {
+        return random.nextInt(max - min + 1) + min;
+    }
+
+    /**
+     * Tung một xúc xắc (công bằng) từ 1–6.
+     */
+    public static int rollDice() {
+        return random.nextInt(6) + 1;
+    }
+
+    /**
+     * Tung 3 xúc xắc công bằng và trả về mảng 3 giá trị.
      */
     public static int[] rollThreeDice() {
         int[] diceValues = new int[3];
@@ -28,79 +38,33 @@ public class Utils {
     }
 
     /**
-     * Calculates the sum of an array of integer dice values.
-     *
-     * @param diceValues An array of integers representing dice rolls.
-     * @return The sum of the integers in the array.
+     * Tính tổng của 3 xúc xắc.
      */
     public static int sumDice(int[] diceValues) {
-        if (diceValues == null) {
-            return 0;
-        }
         int sum = 0;
         for (int value : diceValues) {
             sum += value;
         }
-
         return sum;
     }
 
     /**
-     * Format currency-style output for balance.
-     *
-     * @param amount Balance or bet.
-     * @return Formatted string.
+     * Định dạng số thành kiểu tiền tệ (2 số thập phân).
      */
     public static String formatCurrency(double amount) {
         return String.format("$%.2f", amount);
     }
 
     /**
-     * Rolls a single six-sided die using a specific bias.
-     * The bias makes results like 5 more likely and 1 impossible.
-     * Possible outcomes: {2, 3, 4, 5, 5, 6}.
-     *
-     * @return A number between 2 and 6 based on the bias.
+     * Sinh ra mảng 3 xúc xắc có tổng là targetSum (tự động điều chỉnh hợp lệ).
      */
-    public static int rollBiasedOverDice() {
-        int[] biasedOutcomes = {2, 3, 4, 5, 5, 6};
-        return biasedOutcomes[random.nextInt(biasedOutcomes.length)];
-    }
-
-    /**
-     * Rolls 3 dice, each using a biased mechanism, and returns their individual values.
-     * Each die independently uses the bias defined in rollSingleBiasedDie().
-     * (This method was previously named biasedRollDie and returned a single int).
-     *
-     * @return An array of 3 integers, where each element is the result of one biased die roll.
-     */
-    public static int[] biasedOverRollDice() {
-        return generateDiceSum(randomBetween(11, 18));
-    }
-
-    public static int rollBiasedUnderDice() {
-        int[] biasedOutcomes = {1, 2, 2, 3, 4, 5};
-        return biasedOutcomes[random.nextInt(biasedOutcomes.length)];
-    }
-
-    public static int[] biasedUnderRollDice() {
-        return generateDiceSum(randomBetween(3, 10));
-    }
-
     public static int[] generateDiceSum(int targetSum) {
-        Random rand = new Random();
         int[] dice = new int[3];
-
         do {
-            dice[0] = rand.nextInt(6) + 1;
-            dice[1] = rand.nextInt(6) + 1;
+            dice[0] = rollDice();
+            dice[1] = rollDice();
             dice[2] = targetSum - dice[0] - dice[1];
         } while (dice[2] < 1 || dice[2] > 6);
-
         return dice;
-    }
-
-    public static int randomBetween(int min, int max) {
-        return new Random().nextInt(max - min + 1) + min;
     }
 }

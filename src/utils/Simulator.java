@@ -1,55 +1,69 @@
 package utils;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Random;
-
 import engine.GameEngine;
 import model.House;
 import model.Player;
 import stats.StatisticsManager;
 
 public class Simulator {
-    public Simulator() {
-    }
+    static final int SIMULATION_ROUNDS = 100000;
+    static final double BASE_BET = 5.0;
 
     public static void main(String[] args) {
         Random random = new Random();
-        int SIMULATION_ROUNDS = 100000;
-        Player player = new Player("SimPlayer", 10000);
+        Player player = new Player("SmartBot", 1000);
         House house = new House(1000.0);
         GameEngine engine = new GameEngine(house);
         StatisticsManager stats = new StatisticsManager();
 
-        double baseBet = 1.0;
-        double currentBet = baseBet;
+        Deque<Boolean> lastWins = new ArrayDeque<>();
+        Deque<Integer> lastSums = new ArrayDeque<>();
 
-        for (int i = 0; i < SIMULATION_ROUNDS; ++i) {
-            if (player.getBalance() < currentBet) {
-                System.out.println("SimPlayer cannot afford bet of $" + currentBet + " at round " + (i + 1));
-                break;
+        for (int i = 0; i < SIMULATION_ROUNDS; i++) {
+            if (player.getBalance() < BASE_BET) break;
+
+            // Backtracking: analyze last 5 rounds
+            int over = 0, under = 0;
+            for (int sum : lastSums) {
+                if (sum > 10) over++;
+                else under++;
             }
 
-            player.setBetAmount(currentBet);
-            player.setBetChoice("over");  // always betting "under"
+            String guess;
+            if (lastWins.size() >= 5) {
+                // Predict based on trend
+                guess = (under > over) ? "over" : "under";
+            } else {
+                guess = random.nextBoolean() ? "under" : "over";
+            }
 
+            double betAmount = BASE_BET;
+            if (!lastWins.isEmpty() && !lastWins.peekLast()) {
+                betAmount *= 2; // simulate martingale
+            }
+
+            player.setBetAmount(betAmount);
+            player.setBetChoice(guess);
             engine.playRound(player);
-
             boolean playerWon = engine.isPlayerWon();
             int[] finalRolls = engine.getDiceValues();
-            int diceTotal = Utils.sumDice(finalRolls);
+            int total = Utils.sumDice(finalRolls);
 
-            stats.recordOutcome(diceTotal, playerWon);
+            stats.recordOutcome(total, playerWon);
 
-            if (playerWon) {
-                currentBet = baseBet;  // reset to base after win
-            } else {
-                currentBet *= 2;       // double after loss
-            }
+            // Track history
+            if (lastWins.size() == 5) lastWins.removeFirst();
+            if (lastSums.size() == 5) lastSums.removeFirst();
+            lastWins.add(playerWon);
+            lastSums.add(total);
         }
 
-        System.out.println("✅ Simulation completed.");
+        System.out.println("\n===== SIMULATION STATS =====");
         stats.printStatistics();
         System.out.println("Final Player Balance: " + Utils.formatCurrency(player.getBalance()));
-        System.out.println("Final House Balance: " + Utils.formatCurrency(house.getBalance()));
+        System.out.println("Final House Balance:  " + Utils.formatCurrency(house.getBalance()));
     }
 }
-

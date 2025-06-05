@@ -44,6 +44,7 @@ public class GameEngine {
 
         // Update BiasManager streaks
         biasManager.updateStreak(playerWins);
+        biasManager.updateLastRoundResult(playerWins);
 
         // Result message
         return resultMessage = playerWins ? "You win! Dice total: " + diceTotal : "You lose. Dice total: " + diceTotal;
