@@ -17,6 +17,7 @@ public class GamePanel extends JPanel {
     private final JButton five, ten, twenty, fifty, hundred, allIn;
     private final JButton underButton, overButton;
     private final JLabel balanceLabel;
+    private final JLabel winStreakLabel = new JLabel("Win Streak: 0");
     private final ResultBar resultBar = new ResultBar();
     private final Random random = new Random();
 
@@ -28,6 +29,8 @@ public class GamePanel extends JPanel {
     private final House house;
     private final GameEngine engine;
     private final StatisticsManager stats;
+
+    private int currentStreak = 0;
 
     public GamePanel(String playerName, double startingBalance, MainFrame mainFrame) {
         String name = mainFrame.getPlayerName();
@@ -55,8 +58,14 @@ public class GamePanel extends JPanel {
         add(topPanel, BorderLayout.NORTH);
 
         // Center Panel
-        JPanel centerPanel = new JPanel(new BorderLayout(10, 40));
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setOpaque(false);
+
+        resultBar.setOpaque(false);
+        resultBar.setPreferredSize(new Dimension(400, 70));
+        resultBar.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.add(resultBar);
 
         diceLabel1 = createDiceLabel();
         diceLabel2 = createDiceLabel();
@@ -67,18 +76,30 @@ public class GamePanel extends JPanel {
         dicePanel.add(diceLabel1);
         dicePanel.add(diceLabel2);
         dicePanel.add(diceLabel3);
+        dicePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.add(Box.createVerticalStrut(10));
+        centerPanel.add(dicePanel);
+
+        // Balance + Win Streak Panel (2 columns)
+        JPanel statsPanel = new JPanel(new GridLayout(1, 2, 20, 0));
+        statsPanel.setMaximumSize(new Dimension(400, 40));
+        statsPanel.setOpaque(false);
 
         balanceLabel = new JLabel("Balance: " + Utils.formatCurrency(player.getBalance()));
         balanceLabel.setFont(new Font("Arial", Font.BOLD, 18));
         balanceLabel.setForeground(new Color(255, 204, 102));
         balanceLabel.setHorizontalAlignment(JLabel.CENTER);
 
-        resultBar.setOpaque(false);
-        resultBar.setPreferredSize(new Dimension(400, 70));
+        winStreakLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        winStreakLabel.setForeground(new Color(255, 204, 102));
+        winStreakLabel.setHorizontalAlignment(JLabel.CENTER);
 
-        centerPanel.add(resultBar, BorderLayout.NORTH);
-        centerPanel.add(dicePanel, BorderLayout.CENTER);
-        centerPanel.add(balanceLabel, BorderLayout.SOUTH);
+        statsPanel.add(balanceLabel);
+        statsPanel.add(winStreakLabel);
+
+        centerPanel.add(Box.createVerticalStrut(10));
+        centerPanel.add(statsPanel);
+
         add(centerPanel, BorderLayout.CENTER);
 
         // Bottom Panel
@@ -108,9 +129,7 @@ public class GamePanel extends JPanel {
         allIn = new JButton("All In");
 
         JButton[] betButtons = {five, ten, twenty, fifty, hundred, allIn};
-        for (JButton btn : betButtons) {
-            styleButton(btn);
-        }
+        for (JButton btn : betButtons) styleButton(btn);
 
         five.addActionListener(e -> betField.setText("5"));
         ten.addActionListener(e -> betField.setText("10"));
@@ -177,7 +196,6 @@ public class GamePanel extends JPanel {
         }
 
         player.setBetAmount(bet);
-
         if (!player.hasEnoughBalance()) {
             JOptionPane.showMessageDialog(this, "Not enough balance.");
             return;
@@ -209,6 +227,7 @@ public class GamePanel extends JPanel {
 
                 stats.recordOutcome(diceTotal, playerWon);
                 updateBalance();
+                updateWinStreak(playerWon);
 
                 if (player.getBalance() <= 0) {
                     JOptionPane.showMessageDialog(this, "You're out of money! Game over.");
@@ -223,6 +242,15 @@ public class GamePanel extends JPanel {
 
     private void updateBalance() {
         balanceLabel.setText("Balance: " + Utils.formatCurrency(player.getBalance()));
+    }
+
+    private void updateWinStreak(boolean playerWon) {
+        if (playerWon) {
+            currentStreak++;
+        } else {
+            currentStreak = 0;
+        }
+        winStreakLabel.setText("Win Streak: " + currentStreak);
     }
 
     private void updateDiceIcons(int val1, int val2, int val3) {

@@ -1,23 +1,23 @@
 package bias;
 
+import java.util.LinkedList;
 import java.util.Random;
 import utils.Utils;
 
 public class BiasManager {
     private final Random random = new Random();
 
-    private int roundsPlayed = 0;   // Number of rounds played
-    private int winStreak = 0;      // Consecutive player wins
-    private int lossStreak = 0;     // Consecutive player losses
-    private int[] diceValues = new int[3]; // Add this field
+    private int roundsPlayed = 0;
+    private int winStreak = 0;
+    private int lossStreak = 0;
+    private int[] diceValues = new int[3];
 
-    public BiasManager() {
-    }
+    // Track result history (for smoothing / avoiding patterns)
+    private final LinkedList<Boolean> recentOvers = new LinkedList<>();
+    private final int memorySize = 6;
 
-    /**
-     * Update the winning/losing streak counters after each round.
-     * @param playerWon true if player won this round, false otherwise.
-     */
+    public BiasManager() {}
+
     public void updateStreak(boolean playerWon) {
         roundsPlayed++;
         if (playerWon) {
@@ -29,61 +29,72 @@ public class BiasManager {
         }
     }
 
-    /**
-     * Decide whether to roll dice with bias or fair, and execute roll accordingly.
-     *
-     * @param playerBet The player's bet, either "under" or "over".
-     * @return The sum of the three dice after applying bias or fair roll.
-     */
     public int rollBiasedDice(String playerBet, double initBalance, double balance, double betAmount) {
         roundsPlayed++;
-        double profit = balance/initBalance;
-        double ratioBet = betAmount/balance;
+        double profit = balance / initBalance;
+        double ratioBet = betAmount / balance;
 
-        // Bias probability increases over time (up to 30%)
-        double timeBiasRate = Math.min(0.3, roundsPlayed * 0.01);
         boolean doBias;
+        double timeBiasRate = Math.min(0.3, roundsPlayed * 0.01);
 
-        // Additional bias logic based
+        // Default bias decision logic
         if (profit >= 2) {
             doBias = random.nextDouble() < 0.85;
-        } else if (lossStreak > 3) {
-            if (ratioBet > 0.6) {
-                doBias = random.nextDouble() < 0.75;
-            }
-            else {
-                doBias = false;
-            }
-        } else if (winStreak > 3) {
-            if (ratioBet > 0.6) {
-                doBias = random.nextDouble() < 0.75;
-            }
-            else {
-                doBias = false;
-            }
+        } else if (lossStreak > 3 || winStreak > 3) {
+            doBias = ratioBet > 0.6 && random.nextDouble() < 0.75;
         } else {
             doBias = random.nextDouble() < timeBiasRate;
         }
 
-        // Apply bias if decided
-        if (doBias) {
-            if (random.nextDouble() < 0.8) {
-                if (playerBet.equalsIgnoreCase("over")) {
-                    diceValues = Utils.biasedUnderRollDice(); // Make they get UNDER result
-                } else {
-                    diceValues = Utils.biasedOverRollDice(); // Make they get OVER result
-                }
-                return Utils.sumDice(diceValues);
+        boolean avoidPattern = isOverRepeatedTooMuch();
+
+        // Occasionally allow fair win (small bet)
+        if (betAmount <= 0.1 * balance && random.nextDouble() < 0.25) {
+            if (playerBet.equalsIgnoreCase("over")) {
+                diceValues = Utils.biasedOverRollDice();
+                recordOverResult(true);
             } else {
-                int biasedRoll = playerBet.equalsIgnoreCase("over") ? 10 : 11;
-                diceValues = Utils.generateDiceSum(biasedRoll);
-                return biasedRoll;
+                diceValues = Utils.biasedUnderRollDice();
+                recordOverResult(false);
             }
-        } else {
-            // Fair roll (no bias)
-            diceValues = Utils.rollThreeDice();
             return Utils.sumDice(diceValues);
         }
+
+        if (doBias && !avoidPattern) {
+            // House forces win (player loses)
+            if (random.nextDouble() < 0.8) {
+                if (playerBet.equalsIgnoreCase("over")) {
+                    diceValues = Utils.biasedUnderRollDice();
+                    recordOverResult(false);
+                } else {
+                    diceValues = Utils.biasedOverRollDice();
+                    recordOverResult(true);
+                }
+            } else {
+                // More direct control (sum close to crossover point)
+                int biasedSum = playerBet.equalsIgnoreCase("over") ? 10 : 11;
+                diceValues = Utils.generateDiceSum(biasedSum);
+                recordOverResult(biasedSum > 10);
+            }
+        } else {
+            // Fair roll
+            diceValues = Utils.rollThreeDice();
+            recordOverResult(Utils.sumDice(diceValues) > 10);
+        }
+
+        return Utils.sumDice(diceValues);
+    }
+
+    private void recordOverResult(boolean isOver) {
+        if (recentOvers.size() >= memorySize) {
+            recentOvers.removeFirst();
+        }
+        recentOvers.add(isOver);
+    }
+
+    private boolean isOverRepeatedTooMuch() {
+        long overCount = recentOvers.stream().filter(b -> b).count();
+        return overCount >= memorySize - 1 || overCount <= 1;
     }
 
     public int getRoundsPlayed() {

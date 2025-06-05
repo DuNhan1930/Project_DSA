@@ -75,11 +75,7 @@ public class Utils {
      * @return An array of 3 integers, where each element is the result of one biased die roll.
      */
     public static int[] biasedOverRollDice() {
-        int[] diceValues = new int[3];
-        diceValues[0] = rollBiasedOverDice();
-        diceValues[1] = rollBiasedOverDice();
-        diceValues[2] = rollBiasedOverDice();
-        return diceValues;
+        return generateDiceSum(randomBetween(11, 18));
     }
 
     public static int rollBiasedUnderDice() {
@@ -88,11 +84,7 @@ public class Utils {
     }
 
     public static int[] biasedUnderRollDice() {
-        int[] diceValues = new int[3];
-        diceValues[0] = rollBiasedUnderDice();
-        diceValues[1] = rollBiasedUnderDice();
-        diceValues[2] = rollBiasedUnderDice();
-        return diceValues;
+        return generateDiceSum(randomBetween(3, 10));
     }
 
     public static int[] generateDiceSum(int targetSum) {
@@ -106,5 +98,9 @@ public class Utils {
         } while (dice[2] < 1 || dice[2] > 6);
 
         return dice;
+    }
+
+    public static int randomBetween(int min, int max) {
+        return new Random().nextInt(max - min + 1) + min;
     }
 }
