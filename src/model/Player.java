@@ -2,12 +2,14 @@ package model;
 
 public class Player {
     private final String name;
+    private final double initBalance;
     private double balance;
     private double betAmount;
     private String betChoice; // "under" or "over"
 
     public Player(String name, double initialBalance) {
         this.name = name;
+        this.initBalance = initialBalance;
         this.balance = initialBalance;
     }
 
@@ -59,5 +61,9 @@ public class Player {
                 "name='" + name + '\'' +
                 ", balance=" + balance +
                 '}';
+    }
+
+    public double getInitialBalance() {
+        return initBalance;
     }
 }

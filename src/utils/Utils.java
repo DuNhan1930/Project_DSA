@@ -94,4 +94,17 @@ public class Utils {
         diceValues[2] = rollBiasedUnderDice();
         return diceValues;
     }
+
+    public static int[] generateDiceSum(int targetSum) {
+        Random rand = new Random();
+        int[] dice = new int[3];
+
+        do {
+            dice[0] = rand.nextInt(6) + 1;
+            dice[1] = rand.nextInt(6) + 1;
+            dice[2] = targetSum - dice[0] - dice[1];
+        } while (dice[2] < 1 || dice[2] > 6);
+
+        return dice;
+    }
 }

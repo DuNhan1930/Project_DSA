@@ -1,17 +1,15 @@
 package engine;
 
-import java.util.Random;
-
-import ai.BiasManager;
+import bias.BiasManager;
 import model.Player;
 import model.House;
-import utils.Utils;
 
 public class GameEngine {
     private final House house;
     private final BiasManager biasManager;
-    private final int[] diceValues = new int[3];
+    private int[] diceValues = new int[3];
     private boolean playerWins;
+    private String resultMessage;
 
     public GameEngine(House house) {
         this.house = house;
@@ -29,7 +27,8 @@ public class GameEngine {
         String playerBet = player.getBetChoice();
 
         // Use BiasManager to roll biased dice total
-        int diceTotal = biasManager.rollBiasedDice(playerBet);
+        int diceTotal = biasManager.rollBiasedDice(playerBet, player.getInitialBalance(), player.getBalance(), player.getBetAmount());
+        diceValues = biasManager.getDiceValues();
 
         // Check win or lose based on dice total and bet
         playerWins = checkWin(diceTotal, playerBet);
@@ -43,17 +42,11 @@ public class GameEngine {
             house.winMoney(player.getBetAmount());
         }
 
-        // Update BiasManager streaks (bias manager sẽ cập nhật trạng thái MarkovChain trong đó)
+        // Update BiasManager streaks
         biasManager.updateStreak(playerWins);
 
-        // Cập nhật trạng thái MarkovChain trong House nếu cần (giữ hay bỏ)
-        house.updateState(playerBet, playerWins);
-
-        // Lưu kết quả diceValues nếu cần (hiện chỉ lưu tổng thôi)
-        // diceValues = ... (nếu bạn muốn roll từng viên theo cách bias hơn)
-
-        // Thông báo kết quả
-        return playerWins ? "You win! Dice total: " + diceTotal : "You lose. Dice total: " + diceTotal;
+        // Result message
+        return resultMessage = playerWins ? "You win! Dice total: " + diceTotal : "You lose. Dice total: " + diceTotal;
     }
 
     private boolean checkWin(int sum, String choice) {
@@ -68,5 +61,9 @@ public class GameEngine {
 
     public boolean isPlayerWon() {
         return playerWins;
+    }
+
+    public String getResultMessage() {
+        return resultMessage;
     }
 }
