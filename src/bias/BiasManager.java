@@ -4,8 +4,6 @@ import java.util.*;
 import utils.Utils;
 
 public class BiasManager {
-    private final Random random = new Random();
-
     private int roundsPlayed = 0;
     private int winStreak = 0;
     private int lossStreak = 0;
