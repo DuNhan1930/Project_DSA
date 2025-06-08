@@ -80,7 +80,7 @@ public class BiasManager {
         if (profit >= 2) return true;
         if (isMartingale) return true;
         if (isRepeatingChoice && Utils.randomChance(0.7)) return true;
-        if (lossStreak > 3 || winStreak > 3) return ratioBet > 0.4;
+        if (lossStreak > 3 || winStreak > 3 || ratioBet > 0.4) return true;
         return Utils.randomChance(timeBiasRate);
     }
 
@@ -139,4 +139,16 @@ public class BiasManager {
     public void setDiceValues(int[] diceValues) {
         this.diceValues = diceValues;
     }
+
+    public void reset() {
+        roundsPlayed = 0;
+        winStreak = 0;
+        lossStreak = 0;
+        maxConsecutiveBiasLosses = 0;
+        recentChoices.clear();
+        recentBets.clear();
+        recentWins.clear();
+        recentOvers.clear();
+    }
+
 }
