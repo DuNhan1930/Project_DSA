@@ -67,4 +67,8 @@ public class GameEngine {
     public String getResultMessage() {
         return resultMessage;
     }
+
+    public BiasManager getBiasManager() {
+        return biasManager;
+    }
 }

@@ -39,6 +39,7 @@ public class GamePanel extends JPanel {
         this.player = new Player(name, balance);
         this.house = new House(1000.0);
         this.engine = new GameEngine(house);
+        this.engine.getBiasManager().reset();
         this.stats = new StatisticsManager();
 
         setOpaque(false);

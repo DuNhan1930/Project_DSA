@@ -40,6 +40,7 @@ public class BiasManager {
 
         boolean doBias = shouldBias(playerBet, initBalance, balance, betAmount);
 
+
         if (maxConsecutiveBiasLosses >= MAX_BIAS_LOSSES) {
             doBias = false;
             maxConsecutiveBiasLosses = 0;
@@ -128,6 +129,7 @@ public class BiasManager {
     }
 
     private boolean isOverRepeatedTooMuch() {
+        if (recentOvers.size() < memorySize) return false; // not enough history to judge
         long count = recentOvers.stream().filter(b -> b).count();
         return count >= memorySize - 1 || count <= 1;
     }
